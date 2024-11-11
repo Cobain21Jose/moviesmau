@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoviesMau</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ... (estilos anteriores) ... */
+
+        /* Nuevo estilo para el header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 10%, transparent);
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+        .header.scrolled {
+            background: #141414;
+        }
+
+        .logo {
+            color: #ffffff;
+            font-size: 2rem;
+            font-weight: bold;
+            text-decoration: none;
+            font-family: 'Century Gothic', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.9px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: #e5e5e5;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: #fff;
+        }
+
+        /* Ajuste del hero para el header */
+        .hero {
+            margin-top: 0;
+        }
+
+        /* Resto de los estilos permanecen igual */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #141414;
+            font-family: 'Century Gothic', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            position: relative;
+            height: 80vh;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 7.4rem;
+            background: linear-gradient(180deg, transparent, rgba(20, 20, 20, 0.6), #141414);
+        }
+
+        .hero video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(60%);
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 50px;
+            max-width: 50%;
+        }
+
+        .hero-logo {
+            width: 400px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            margin: 1rem 0 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .hero-btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn {
+            background: white;
+            color: black;
+        }
+
+        .info-btn {
+            background: rgba(0, 0, 0, 0);
+            color: white;
+        }
+
+        .hero-btn:hover {
+            opacity: 0.8;
+        }
+
+        .movies-section {
+            margin-top: -100px;
+            position: relative;
+            z-index: 2;
+            padding: 0 50px;
+        }
+
+        .slider-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #e5e5e5;
+        }
+
+        .movies-row {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            scrollbar-width: none;
+        }
+
+        .movies-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .movie-card {
+            flex: 0 0 240px;
+            transition: all 0.3s ease;
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.1);
+            z-index: 2;
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 135px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .movie-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .movie-card:hover .movie-info {
+            opacity: 1;
+        }
+
+        .movie-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid white;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .movie-btn:hover {
+            background: white;
+            color: black;
+        }
+
+        .movie-title {
+            color: #ebf0ec;
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+        }
+
+        .match {
+            color: #ebf0ec;
+            font-size: 0.8rem;
+        }
+
+        .metadata {
+            font-size: 0.5rem;
+            color: #d2d2d2;
+        }
+
+        .genre {
+            font-size: 0.8rem;
+            color: #d2d2d2;
+        
+}
+/* Hero Section */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Asegura que la sección ocupe toda la altura de la pantalla */
+    overflow: hidden; /* Evita que se muevan elementos fuera de la sección */
+}
+
+.video-background {
+    position: fixed; /* Fija el video en la pantalla */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que el video cubra toda el área */
+    z-index: -1; /* Asegura que el video esté detrás del contenido */
+}
+
+.content {
+    position: absolute;
+    top: 50%; /* Centra el contenido verticalmente */
+    left: 50%; /* Centra el contenido horizontalmente */
+    transform: translate(-50%, -50%); /* Ajusta la posición exacta */
+    color: white; /* Cambia el color del texto para hacerlo visible sobre el video */
+    text-align: center;
+    z-index: 1; /* Asegura que el contenido esté por encima del video */
+}
+/* Estilo del header (encabezado) */
+.header {
+    position: absolute; /* Lo coloca encima del video */
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0); /* Fondo semi-transparente */
+    color: white; /* Color del texto */
+    z-index: 2; /* Asegura que el header esté por encima del video */
+    display: flex;
+    justify-content: space-between; /* Espacio entre logo y menú */
+    align-items: center;
+}
+
+.header .logo h1 {
+    margin: 0;
+}
+
+.header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.header nav ul li {
+    margin: 0 10px;
+}
+
+.header nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Video de fondo */
+.video-background {
+    position: fixed; /* El video siempre estará fijo */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cubre toda la pantalla */
+    z-index: -1; /* El video estará detrás de todos los demás elementos */
+}
+
+/* Contenido principal */
+.content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    text-align: center;
+    z-index: 1; /* Asegura que el contenido esté por encima del video */
+}
+.movies-row {
+    display: flex;
+    overflow: hidden;
+    scroll-behavior: smooth; /* Para suavizar el movimiento */
+}
+.movie-card {
+    margin-right: 20px; /* Para agregar un poco de espacio entre las tarjetas */
+}
+
+    </style>
+</head>
+<body>
+ <!-- Header -->
+<header class="header">
+    <a href="#" class="logo">MoviesMau</a>
+    <nav class="nav-menu">
+        <a href="https://latvdemauiniciovertvopen.on.drv.tw/tvmau/">Ir a tv de mau </a>
+        <a href="#">Películas</a>
+        <a href="#">Apoyo al Proyecto</a>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+    <video id="hero-video" autoplay loop muted>
+        <source id="video-source" type="video/mp4">
+    </video>
+    <div class="hero-content">
+        <img id="hero-logo" alt="Monsters University" class="hero-logo">
+        <p id="hero-description" class="hero-description"></p>
+        <div class="hero-buttons">
+            <a id="play-btn" href="#" class="hero-btn play-btn">
+                <i class="fas fa-play"></i> Reproducir
+            </a>
+            <a id="info-btn" href="#" class="hero-btn info-btn">
+                <i class="fas fa-info-circle"></i> Más información
+            </a>
+            <button class="hero-btn audio-btn" onclick="toggleAudio()">
+                <img id="audio-icon" src="https://cdn-icons-png.flaticon.com/512/347/347794.png" alt="Volumen" width="20" height="20"> 
+            </button>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Datos para los diferentes "Heroes"
+    const heroes = [
+    {
+        videoUrl: "https://ia600402.us.archive.org/2/items/el-planeta-de-los-simios-confrontacion-no-queremos-la-guerra-hd-20th-century-studios-la-1080p-h/El-Planeta-De-Los-Simios_-Confrontación-No-Queremos-La-Guerra-_HD_-20th-Century-Studios-LA-_1080p_-h.m4v",
+        logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/Yv7vggfpM6CQbB3vw7D_eA/480x180.webp",
+        description: "El planeta de los simios: Confrontación (2014) se sitúa años después de que un virus letal ha diezmado a gran parte de la humanidad, mientras que una sociedad avanzada de simios liderada por César prospera en paz en los bosques. Sin embargo, la frágil coexistencia entre humanos y simios se ve amenazada cuando un grupo de sobrevivientes humanos, en busca de recursos, entra en conflicto con los simios.",
+        playLink: "https://latvdemauiniciovertvopen.on.drv.tw/El planeta de los simios - Confrontación/hola7.html",
+        infoLink: "https://www.imdb.com/title/tt1453405/"
+    },
+    {
+        videoUrl: "https://ia600804.us.archive.org/22/items/monsters-university-new-trailer-2013-pixar-movie-hd-rotten-tomatoes-trailers-720p-h-264-youtube/Monsters-University-NEW-Trailer-_2013_-Pixar-Movie-HD-Rotten-Tomatoes-Trailers-_720p_-h264_-youtube_.m4v",
+        logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/Video124/v4/d6/8b/ea/d68bea34-ed5b-92fb-4c0a-6aea34dfafbd/oxd1708113230395469439.png/480x180.png",
+        description: "Mike y Sulley se conocieron en sus días de universidad, cuando soñaban con ser grandes asustadores. A través de sus aventuras y desafíos, ambos aprenden el valor de la amistad y el trabajo en equipo.",
+        playLink: "https://latvdemauiniciovertvopen.on.drv.tw/Monsters-University/HOLA11.html",
+        infoLink: "https://www.imdb.com/title/tt1453405/"
+    },
+    {
+        videoUrl: "https://ia600402.us.archive.org/15/items/death-race-2-2010-markus-giving-luke-a-mustang-4-k-uhd-4-kplay-back-1080p-h-264-youtube/Death-Race-2-_2010_-Markus-Giving-Luke-A-Mustang-_-4K-UHD-4KPlayBack-_1080p_-h264_-youtube_.m4v",
+        logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/WJ9n1UgyvlbguU4o-_Uclg/480x180.webp",
+        title: "Death Race 2: El inicio",
+        description: "Después de ser condenado por matar a un policía, un preso intenta ganar su libertad compitiendo en una carrera brutal donde los autos son armas mortales. Esta precuela explora los orígenes de la brutal carrera en prisión y del personaje Carl 'Luke' Lucas (interpretado por Luke Goss), quien debe participar en la mortal competencia para ganar su libertad.",
+        playLink: "https://latvdemauiniciovertvopen.on.drv.tw/death race 2/hola5.html",
+        infoLink: "https://www.imdb.com/title/tt1596343/"
+    },
+    {
+        videoUrl: "https://ia904502.us.archive.org/10/items/turner_video_102162/102162.ia.mp4",
+        logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/PRd6xVaoL4GDHnz9SV4e2Q/480x180.webp",
+        title: "Resident Evil: Capítulo Final",
+        description: "Alice es la única superviviente que puede salvar lo poco que queda de la raza humana en su lucha contra los muertos vivientes. Ahora tendrá que regresar justo donde la pesadilla comenzó, a The Hive en Raccoon City, donde la Corporación Umbrella está reuniendo fuerzas antes del ataque final contra los últimos supervivientes del apocalipsis.",
+        playLink: "https://latvdemauiniciovertvopen.on.drv.tw/resident-evil-capitulo-final/hola.html",
+        infoLink: "https://www.imdb.com/title/tt2592614/"
+    },
+    {
+        videoUrl: "https://ia800701.us.archive.org/25/items/trailer-proyecto-x-espanol-latino-2012-realizacion-eduard-guerrero-eduard-guerrero-720p-h-264/Trailer-Proyecto-X-_Español-Latino_-2012-_Realización_-Eduard-Guerrero_-Eduard-Guerrero-_720p_-h264_.m4v",
+        logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/bwWrKeI_zkwMnP2-KOuR0A/480x180.webp",
+        title: "Proyecto X: 2012",
+        description: "Proyecto X (2012) sigue la historia de tres estudiantes de preparatoria – Thomas, Costa y JB – que organizan una fiesta para ganar popularidad. Lo que comienza como una pequeña reunión se convierte rápidamente en un evento descontrolado, atrayendo a cientos de personas y generando un caos absoluto en el vecindario. Mientras la fiesta se sale de control con música ensordecedora, alcohol, y destrozos, los amigos documentan todo en video, dejando un registro de una noche llena de excesos y consecuencias inesperadas.",
+        playLink: "https://latvdemauiniciovertvopen.on.drv.tw/proyecto x/hola6.html",
+        infoLink: "https://www.imdb.com/title/tt1649419/"
+    },
+    {
+        videoUrl: "https://ia600405.us.archive.org/10/items/john-wick-trailer-official-warner-bros.-uk-warner-bros.-uk-ireland-1080p-h-264-youtube/John%20Wick%20%E2%80%93%20Trailer%20-%20Official%20Warner%20Bros.%20UK%20-%20Warner%20Bros.%20UK%20%26%20Ireland%20%281080p%2C%20h264%2C%20youtube%29.m4v",
+        logoUrl: "https://is1-ssl.mzstatic.com/image/thumb/Features124/v4/de/e4/c0/dee4c0f4-978e-e078-969f-5b348906f62d/zxp6321187485417125383.png/480x180.webp",
+        title: "John Wick: Otro Día Para Matar",
+        description: "En Otro día para matar, la esposa de John Wick acaba de morir, por lo que él está devastado y sólo. Pero la soledad dura poco cuando llega un último regalo de ella: una cachorrita llamada Daisy. Los días parecen ir bien para John pero todo se derrumba cuando unos ladrones rusos entran a su casa, le roban su preciado Mustang y matan a Daisy. John Wick era un asesino a sueldo retirado y ahora tendrá que volver al negocio para darle caza a los que le arrebataron todo lo que tenía.",
+        playLink: "https://latvdemauiniciovertvopen.on.drv.tw/John Wick: Otro Día Para Matar/hola12.html",
+        infoLink: "https://www.imdb.com/title/tt2911666/"
+    },
+    {
+    "videoUrl": "https://ia600401.us.archive.org/18/items/2012-trailer-2-sony-pictures-entertainment-1080p-h-264-youtube_202411/2012-Trailer-_2-Sony-Pictures-Entertainment-_1080p_-h264_-youtube_.m4v",
+    "logoUrl": "https://is1-ssl.mzstatic.com/image/thumb/KiDsxOOQbJ63npJC61a_jw/480x180.webp",
+    "title": "2012",
+    "description": "Los miles de millones de habitantes de la Tierra desconocen que el planeta tiene una fecha de caducidad.",
+    "playLink": "https://latvdemauiniciovertvopen.on.drv.tw/2012/hola12.html",
+    "infoLink": "https://www.imdb.com/title/tt1190080/"
+},
+{
+    "videoUrl": "https://ia600804.us.archive.org/18/items/ford-v-ferrari-official-trailer-2-hd-20th-century-fox-20th-century-studios-1080p-h-264-youtu/FORD-v-FERRARI-_-Official-Trailer-2-_HD_-_-20th-Century-FOX-20th-Century-Studios-_1080p_-h264_-youtu.m4v",
+    "logoUrl": "https://is1-ssl.mzstatic.com/image/thumb/LPpCuy3xbMvjffvlFkHqNw/480x180.webp",
+    "title": "Ford v Ferrari: Contra lo imposible",
+    "description": "La película está basada en la historia de Carroll Shelby, un diseñador de automóviles estadounidense, y Ken Miles, un piloto británico. En la película, Shelby y Miles se enfrentan a la interferencia corporativa, las leyes de la física y sus propios demonios personales para construir un vehículo revolucionario para Ford Motor Co.",
+    "playLink": "https://latvdemauiniciovertvopen.on.drv.tw/Ford%20v%20Ferrari%20Contra%20lo%20imposible/hola12.html",
+    "infoLink": "https://www.imdb.com/title/tt1950186/"
+}
+
+
+];
+
+    // Función para elegir un Hero aleatorio
+    function setRandomHero() {
+        const randomHero = heroes[Math.floor(Math.random() * heroes.length)];
+
+        // Cambiar los contenidos del hero
+        document.getElementById("hero-video").querySelector("source").src = randomHero.videoUrl;
+        document.getElementById("hero-logo").src = randomHero.logoUrl;
+        document.getElementById("hero-description").textContent = randomHero.description;
+        document.getElementById("play-btn").href = randomHero.playLink;
+        document.getElementById("info-btn").href = randomHero.infoLink;
+
+        // Re-cargar el video
+        const video = document.getElementById("hero-video");
+        video.load();
+    }
+
+    // Llamar a la función cuando la página carga
+    window.onload = setRandomHero;
+
+    // Función para alternar el audio del video
+    function toggleAudio() {
+        const video = document.getElementById("hero-video");
+        const audioIcon = document.getElementById("audio-icon");
+
+        if (video.muted) {
+            video.muted = false;
+            audioIcon.src = "https://cdn-icons-png.flaticon.com/512/347/347794.png"; // Volumen activado
+        } else {
+            video.muted = true;
+            audioIcon.src = "https://cdn-icons-png.flaticon.com/512/347/347795.png"; // Volumen desactivado
+        }
+    }
+</script>
+
+
+
+<script>
+    function toggleAudio() {
+        var video = document.getElementById("hero-video");
+        var audioIcon = document.getElementById("audio-icon");
+
+        if (video.muted) {
+            video.muted = false;
+            audioIcon.classList.remove("fa-volume-mute");
+            audioIcon.classList.add("fa-volume-up");
+        } else {
+            video.muted = true;
+            audioIcon.classList.remove("fa-volume-up");
+            audioIcon.classList.add("fa-volume-mute");
+        }
+    }
+</script>
+
+
+<script>
+    function toggleAudio() {
+        var video = document.getElementById("hero-video");
+        if (video.muted) {
+            video.muted = false;
+        } else {
+            video.muted = true;
+        }
+    }
+</script>
+
+
+    <!-- Movies Section -->
+    <section class="movies-section">
+        <div class="slider">
+            <h2 class="slider-title">Popular en Mau Movies</h2>
+            <div class="movies-row">
+<!-- Movie card -->
+<div class="movie-card">
+    <img src="https://wallpapers.com/images/hd/cool-hd-aesthetic-john-wick-movie-poster-h91m83drycd337wq.jpg" alt="John Wick">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <!-- Redirigir al enlace de la película al hacer clic en el botón de play -->
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/John%20Wick%3A%20Otro%20Día%20Para%20Matar/hola12.html" target="_blank">
+                <button class="movie-btn"><i class="fas fa-play"></i></button>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">John Wick</h3>
+        <div class="match">98% Match</div>
+        <div class="metadata">
+            <span>2014</span> • <span>2h 41m</span>
+        </div>
+        <div class="genre">Action • Thriller</div>
+    </div>
+</div>
+
+<!-- Más tarjetas de películas... -->
+<div class="movie-card">
+    <img src="https://i.ytimg.com/vi/F7zLM2YJfxk/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCl_g_YdNrs8JLO4Xo5tmFC3b3-4A" alt="Coraline">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/coraline-y-la-puerta-secreta/HOLA2.html" class="movie-btn">
+                <i class="fas fa-play"></i>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">Coraline</h3>
+        <div class="match">95% Match</div>
+        <div class="metadata">
+            <span>2009</span> • <span>1h 40m</span>
+        </div>
+        <div class="genre">Animation • Fantasy • Horror</div>
+    </div>
+</div>
+
+<div class="movie-card">
+    <img src="https://m.media-amazon.com/images/S/pv-target-images/4e0c84d914ed7c56b47285a747a29c5c38c1a8e9fd28db4f961beac4fcf21175.jpg" alt="A Hard Day's Night">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/A%20Hard%20Day's%20Night%20-%20The%20Beatles%20(Movie)/hola9.html" class="movie-btn">
+                <i class="fas fa-play"></i>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">A Hard Day's Night</h3>
+        <div class="match">95% Match</div>
+        <div class="metadata">
+            <span>1964</span> • <span>1h 87m</span>
+        </div>
+        <div class="genre">Music • Comedy • Drama</div>
+    </div>
+</div>
+
+<div class="movie-card">
+    <img src="https://cdn.hobbyconsolas.com/sites/navi.axelspringer.es/public/media/image/2014/07/354356-critica-amanecer-planeta-simios.jpg?tf=3840x" alt="El Planeta de los Simios">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/El%20Planeta%20de%20los%20Simios%20-%20Confrontación/hola7.html" class="movie-btn">
+                <i class="fas fa-play"></i>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">El Planeta de los Simios: Confrontación</h3>
+        <div class="match">96% Match</div>
+        <div class="metadata">
+            <span>2014</span> • <span>2h 10m</span>
+        </div>
+        <div class="genre">Sci-Fi • Action • Drama</div>
+    </div>
+</div>
+
+<div class="movie-card">
+    <img src="https://isopixel.net/wp-content/uploads/2016/01/el-conjuro-2-poster.jpg" alt="El Conjuro">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/El%20Conjuro/hola8.1.html" class="movie-btn">
+                <i class="fas fa-play"></i>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">El Conjuro</h3>
+        <div class="match">99% Match</div>
+        <div class="metadata">
+            <span>2013</span> • <span>1h 52m</span>
+        </div>
+        <div class="genre">Horror • Mystery • Thriller</div>
+    </div>
+</div>
+
+<div class="movie-card">
+    <img src="https://i.blogs.es/4b6391/ptimg/450_1000.jpg" alt="Proyecto X">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/Proyecto%20X/hola6.html" class="movie-btn">
+                <i class="fas fa-play"></i>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">Proyecto X</h3>
+        <div class="match">95% Match</div>
+        <div class="metadata">
+            <span>2012</span> • <span>1h 28m</span>
+        </div>
+        <div class="genre">Comedy</div>
+    </div>
+</div>
+
+<div class="movie-card">
+    <img src="https://m.media-amazon.com/images/S/pv-target-images/16a02ff77e4222835bdd6501c1233d05e94e979327185670a322e95d64cf9a17.jpg" alt="Darth Race 1">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/Death%20Race%20/hola4.html" class="movie-btn">
+                <i class="fas fa-play"></i>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">Darth Race 1</h3>
+        <div class="match">96% Match</div>
+        <div class="metadata">
+            <span>2024</span> • <span>2h 30m</span>
+        </div>
+        <div class="genre">Sci-Fi • Action • Adventure</div>
+    </div>
+</div>
+
+<div class="movie-card">
+    <img src="https://i-viaplay-com.akamaized.net/viaplay-prod/663/744/1460162911-876552ee8dcf7259ba115401cb424a4c7a785388.jpg?width=960&height=540" alt="2012">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/2012/hola3.html" class="movie-btn">
+                <i class="fas fa-play"></i>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">2012</h3>
+        <div class="match">96% Match</div>
+        <div class="metadata">
+            <span>2009</span> • <span>2h 38m</span>
+        </div>
+        <div class="genre">Action • Disaster • Sci-Fi</div>
+    </div>
+</div>
+
+<div class="movie-card">
+    <img src="https://i.ytimg.com/vi/EVlcJ6wbMic/maxresdefault.jpg" alt="Death Race 2">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/death%20race%202/hola5.html" class="movie-btn">
+                <i class="fas fa-play"></i>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">Death Race 2</h3>
+        <div class="match">96% Match</div>
+        <div class="metadata">
+            <span>2010</span> • <span>1h 36m</span>
+        </div>
+        <div class="genre">Action • Thriller • Sci-Fi</div>
+    </div>
+</div>
+
+<div class="movie-card">
+    <img src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/48D9D29D7E090D49E43F25BA00B69FA134CA1CD4997F492CB39FE581B88C3957/scale?width=1200&aspectRatio=1.78&format=webp" alt="Monsters University">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/Monsters-University/HOLA11.html" class="movie-btn">
+                <i class="fas fa-play"></i>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">Monsters University</h3>
+        <div class="match">96% Match</div>
+        <div class="metadata">
+            <span>2013</span> • <span>1h 44m</span>
+        </div>
+        <div class="genre">Animation • Comedy • Family</div>
+    </div>
+</div>
+
+<div class="movie-card">
+    <img src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/B99790F0A59DC36360C75A5E385BC1EE9601475B41AB61EEC4A9915D24025DF3/scale?width=1200&aspectRatio=1.78&format=webp" alt="Ford v Ferrari">
+    <div class="movie-info">
+        <div class="movie-buttons">
+            <a href="https://latvdemauiniciovertvopen.on.drv.tw/Contra%20lo%20imposible/hola13.html" class="movie-btn">
+                <i class="fas fa-play"></i>
+            </a>
+            <button class="movie-btn"><i class="fas fa-plus"></i></button>
+            <button class="movie-btn"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+        <h3 class="movie-title">Ford v Ferrari</h3>
+        <div class="match">96% Match</div>
+        <div class="metadata">
+            <span>2019</span> • <span>2h 32m</span>
+        </div>
+        <div class="genre">Action • Biography • Drama</div>
+    </div>
+</div>
+
+    <script>
+        // Agregar efecto de fondo al header al hacer scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    </script>
+<script>
+window.addEventListener('scroll', function() {
+    const header = document.querySelector('.header');
+    if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
+    }
+});
+window.addEventListener('keydown', function(event) {
+    const movieRow = document.querySelector('.movies-row');
+    const cardWidth = document.querySelector('.movie-card').offsetWidth + 20; // ancho de una tarjeta + margen
+
+    if (event.key === 'ArrowRight') {
+        movieRow.scrollBy({
+            left: cardWidth, // Mueve a la derecha
+            behavior: 'smooth'
+        });
+    } else if (event.key === 'ArrowLeft') {
+        movieRow.scrollBy({
+            left: -cardWidth, // Mueve a la izquierda
+            behavior: 'smooth'
+        });
+    }
+});
+
+</script>
+</body>
+</html>
